@@ -8,7 +8,13 @@
 
     $new_loc = UPLOAD_SRC.$new_name;
 
-    move_uploaded_file($tmp_loc,$new_loc);
+    if(!move_uploaded_file($tmp_loc,$new_loc)){
+        header("location: index.php?alert=img=upload");
+        exit;
+    }
+    else{
+        return $new_name;
+    }
  }
 
 
@@ -18,7 +24,25 @@ if(isset($_POST['addproduct']))
         $_POST[$key] = mysqli_real_ascape_string($con,$value);
     }
 
-    image_upload($_FILES['image']);
+    $imgpath = image_upload($_FILES['image']);
+    $query="INSERT INTO `products`(`name`, `price`, `description`, `image`) 
+            VALUES ('$_POST[name]','$_POST[price]','$_POST[desc]','$imgpath')";
+
+    if(mysqli_query($con,$query)){
+        header("location: index.php?success=added");
+    }
+    else{
+        header("location: index.php?alert=add_failed");
+    }
+    
+
+
+
+
+
+
+
+
 }
 
 ?>
